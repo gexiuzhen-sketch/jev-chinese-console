@@ -82,6 +82,17 @@ button { color: inherit; }
   top: -5px;
 }
 
+.brand-mark::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 5px;
+  right: 4px;
+  top: 22px;
+  background: var(--cyan);
+  z-index: 2;
+}
+
 .brand-mark span { position: relative; z-index: 1; }
 .brand strong { display: block; font-size: 17px; letter-spacing: -0.02em; }
 .brand small { display: block; color: var(--muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
