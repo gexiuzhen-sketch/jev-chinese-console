@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="无需编写 JSON，直接体验 TypeSafe Jev 的结构化判断与概率。" />
+    <title>Jev 判定台</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Jev 判定台首页">
+        <span class="brand-mark" aria-hidden="true"><span>J</span></span>
+        <span>
+          <strong>Jev 判定台</strong>
+          <small>TypeSafe System One</small>
+        </span>
+      </a>
+
+      <div class="account-area">
+        <div class="quota-pill" id="quota-pill" aria-live="polite">
+          <span class="quota-dot"></span>
+          <span id="quota-text">读取额度中…</span>
+        </div>
+        <button class="button ghost" id="account-button" type="button">登录</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="panel state-panel" aria-labelledby="state-title">
+        <div class="panel-heading">
+          <div>
+            <span class="step">01</span>
+            <h1 id="state-title">放入要判断的内容</h1>
+          </div>
+          <span class="counter"><span id="state-count">0</span> / 12000</span>
+        </div>
+
+        <textarea
+          id="state-input"
+          maxlength="12000"
+          placeholder="粘贴一段消息、工单、评论、文档片段或其他文本…"
+          aria-describedby="state-help"
+        ></textarea>
+        <p class="field-help" id="state-help">内容只用于本次判断，本站不会保存。</p>
+
+        <div class="examples" aria-label="快速示例">
+          <span>快速示例</span>
+          <button type="button" data-sample="ticket">客户工单</button>
+          <button type="button" data-sample="review">内容审核</button>
+          <button type="button" data-sample="priority">事项优先级</button>
+        </div>
+      </section>
+
+      <section class="panel question-panel" aria-labelledby="question-title">
+        <div class="panel-heading">
+          <div>
+            <span class="step">02</span>
+            <h2 id="question-title">告诉 Jev 判断什么</h2>
+          </div>
+        </div>
+
+        <div class="primitive-tabs" role="tablist" aria-label="判断类型">
+          <button class="primitive-tab active" type="button" role="tab" aria-selected="true" data-type="noul">
+            <strong>是否</strong><span>判断成立概率</span>
+          </button>
+          <button class="primitive-tab" type="button" role="tab" aria-selected="false" data-type="choice">
+            <strong>多选一</strong><span>从选项中选择</span>
+          </button>
+          <button class="primitive-tab" type="button" role="tab" aria-selected="false" data-type="score">
+            <strong>等级</strong><span>按程度评分</span>
+          </button>
+        </div>
+
+        <label class="field-label" for="instructions-input">判断问题</label>
+        <textarea
+          class="question-input"
+          id="instructions-input"
+          maxlength="500"
+          placeholder="例如：这条消息是否需要紧急处理？"
+        ></textarea>
+
+        <div id="dynamic-fields" class="dynamic-fields"></div>
+
+        <div class="action-row">
+          <div class="run-note">
+            <span class="pulse-dot"></span>
+            <span id="run-note-text">将返回“是”的概率</span>
+          </div>
+          <button class="button primary" id="evaluate-button" type="button">
+            <span id="evaluate-label">开始判断</span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </button>
+        </div>
+        <p class="form-error" id="form-error" role="alert"></p>
+      </section>
+
+      <section class="panel result-panel" aria-labelledby="result-title">
+        <div class="panel-heading result-heading">
+          <div>
+            <span class="step">03</span>
+            <h2 id="result-title">判断结果</h2>
+          </div>
+          <span class="model-badge">jev-latest</span>
+        </div>
+
+        <div class="result-empty" id="result-empty">
+          <div class="empty-orbit" aria-hidden="true">
+            <span></span><i></i>
+          </div>
+          <strong>等待一次判断</strong>
+          <p>结果会以概率与置信度呈现，不需要解析模型生成的文字。</p>
+        </div>
+
+        <div class="result-loading hidden" id="result-loading" aria-live="polite">
+          <div class="loading-line"><span></span></div>
+          <p>Jev 正在形成结构化判断…</p>
+        </div>
+
+        <div class="result-content hidden" id="result-content" aria-live="polite"></div>
+        <div class="result-error hidden" id="result-error" role="alert"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>由 TypeSafe Jev 驱动</span>
+      <span>判断结果是概率信号，不替代专业审核</span>
+    </footer>
+
+    <dialog class="auth-dialog" id="auth-dialog">
+      <div class="auth-shell">
+        <button class="dialog-close" id="dialog-close" type="button" aria-label="关闭">×</button>
+        <div class="auth-intro">
+          <span class="eyebrow">继续体验</span>
+          <h2>登录后每日可判断 30 次</h2>
+          <p>账号仅用于识别每日额度。我们不会保存你提交给 Jev 判断的内容。</p>
+        </div>
+
+        <div class="auth-tabs" role="tablist" aria-label="账号操作">
+          <button class="active" type="button" data-auth-mode="login">登录</button>
+          <button type="button" data-auth-mode="register">注册</button>
+        </div>
+
+        <form id="auth-form">
+          <div class="auth-name hidden" id="auth-name-wrap">
+            <label for="auth-name">昵称</label>
+            <input id="auth-name" name="displayName" maxlength="40" autocomplete="name" />
+          </div>
+          <label for="auth-email">邮箱</label>
+          <input id="auth-email" name="email" type="email" maxlength="254" autocomplete="email" required />
+          <label for="auth-password">密码</label>
+          <input id="auth-password" name="password" type="password" minlength="8" maxlength="128" autocomplete="current-password" required />
+          <p class="auth-error" id="auth-error" role="alert"></p>
+          <button class="button primary full" id="auth-submit" type="submit">登录并继续</button>
+        </form>
+      </div>
+    </dialog>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

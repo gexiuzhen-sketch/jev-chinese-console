@@ -1,0 +1,22 @@
+[Unit]
+Description=Jev Chinese Console
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jev-console
+Group=jev-console
+WorkingDirectory=/opt/jev-console/current
+EnvironmentFile=/opt/jev-console/shared/.env
+ExecStart=/usr/bin/node src/server.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/jev-console/shared/data
+
+[Install]
+WantedBy=multi-user.target
