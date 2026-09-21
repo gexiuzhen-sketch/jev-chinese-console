@@ -28,7 +28,61 @@
       </div>
     </header>
 
-    <main class="workspace">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <span class="hero-kicker"><i></i> TypeSafe 首个 System One 模型</span>
+        <h1 id="hero-title">把模糊语言，变成<br /><em>可执行的决定。</em></h1>
+        <p>Jev 不写长篇回答。它直接给出“是或否、选哪一个、程度多高”，并附上概率，让软件可以立即行动。</p>
+        <div class="hero-actions">
+          <a class="hero-button hero-button-primary" href="#playground">立即免费体验 <span>↓</span></a>
+          <a class="hero-button hero-button-secondary" href="#real-cases">看看大家怎么用</a>
+        </div>
+        <div class="hero-facts" aria-label="Jev 特点">
+          <span><strong>70–500ms</strong> 官方典型响应</span>
+          <span><strong>3 种</strong> 类型化判断</span>
+          <span><strong>原生</strong> 概率与置信度</span>
+        </div>
+      </div>
+      <div class="hero-demo" aria-label="Jev 判断示意">
+        <div class="demo-topline"><span>实时判断</span><code>jev-latest</code></div>
+        <p class="demo-message">“生产环境无法登录，全部付费客户受到影响。”</p>
+        <div class="demo-question">是否需要立即响应？</div>
+        <div class="demo-answer">
+          <div><span>判断结果</span><strong>是</strong></div>
+          <div class="demo-probability"><span>概率</span><strong>96%</strong></div>
+        </div>
+        <div class="demo-track"><i></i></div>
+        <small>不是一段要解析的文字，而是程序可直接使用的信号。</small>
+      </div>
+    </section>
+
+    <section class="case-strip" id="real-cases" aria-labelledby="cases-title">
+      <div class="case-strip-head">
+        <div><span class="story-kicker">大家正在用 Jev 做什么</span><h2 id="cases-title">从每天的工作，到实时运行的世界</h2></div>
+        <a href="https://github.com/yibie/awesome-jev" target="_blank" rel="noopener noreferrer">浏览社区项目 ↗</a>
+      </div>
+      <div class="case-scroller">
+        <a class="case-card" href="https://buildwithjev.com/" target="_blank" rel="noopener noreferrer">
+          <span class="case-number">01</span><strong>1 分钟整理<br />1,000 封邮件</strong><p>Jevmail 将邮件分成待回复、更新、推广、销售与垃圾邮件。</p><i>邮件分拣 ↗</i>
+        </a>
+        <a class="case-card case-card-dark" href="https://github.com/yibie/awesome-jev" target="_blank" rel="noopener noreferrer">
+          <span class="case-number">02</span><strong>给 AI Agent<br />加一道安全门</strong><p>在每次工具调用前判断风险：放行、询问用户，或直接阻止。</p><i>Agent 安全 ↗</i>
+        </a>
+        <a class="case-card" href="https://github.com/hellogumbo/awesome-jev" target="_blank" rel="noopener noreferrer">
+          <span class="case-number">03</span><strong>让模型实时<br />驾驶与玩游戏</strong><p>社区已经让 Jev 控制无人机、赛车、马里奥、宝可梦和星际争霸。</p><i>实时决策 ↗</i>
+        </a>
+        <a class="case-card case-card-lime" href="#playground">
+          <span class="case-number">04</span><strong>你的业务，<br />下一步怎么判断？</strong><p>工单分流、内容审核、线索评分，都可以从一个问题开始。</p><i>现在试一下 ↓</i>
+        </a>
+      </div>
+    </section>
+
+    <div class="playground-intro" id="playground">
+      <span class="story-kicker">动手试试看</span>
+      <h2>不用写代码，三步完成一次 Jev 判断</h2>
+    </div>
+
+    <main class="workspace" aria-label="Jev 体验操作台">
       <section class="panel state-panel" aria-labelledby="state-title">
         <div class="panel-heading">
           <div>
