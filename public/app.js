@@ -80,6 +80,7 @@ function updateQuota(session) {
   const user = session?.user;
   if (quota) {
     $("#quota-text").textContent = `${user ? "登录用户" : "匿名体验"} · 剩余 ${quota.remaining}/${quota.limit}`;
+    $("#quota-text-mobile").textContent = `剩余 ${quota.remaining}/${quota.limit}`;
   }
   $("#account-button").textContent = user ? `${user.displayName} · 退出` : "登录";
 }
@@ -89,6 +90,7 @@ async function loadSession() {
     updateQuota(await requestJson("/api/session", { method: "GET" }));
   } catch {
     $("#quota-text").textContent = "额度读取失败";
+    $("#quota-text-mobile").textContent = "读取失败";
   }
 }
 

@@ -4,16 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="无需编写 JSON，直接体验 TypeSafe Jev 的结构化判断与概率。" />
-    <title>Jev 判定台</title>
+    <title>Jev中文体验台</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Jev 判定台首页">
+      <a class="brand" href="/" aria-label="Jev中文体验台首页">
         <span class="brand-mark" aria-hidden="true"><span>J</span></span>
         <span>
-          <strong>Jev 判定台</strong>
+          <strong>Jev中文体验台</strong>
           <small>TypeSafe System One</small>
         </span>
       </a>
@@ -22,6 +22,7 @@
         <div class="quota-pill" id="quota-pill" aria-live="polite">
           <span class="quota-dot"></span>
           <span id="quota-text">读取额度中…</span>
+          <span id="quota-text-mobile" class="quota-text-mobile">读取中…</span>
         </div>
         <button class="button ghost" id="account-button" type="button">登录</button>
       </div>
@@ -122,6 +123,60 @@
         <div class="result-error hidden" id="result-error" role="alert"></div>
       </section>
     </main>
+
+    <section class="jev-story" aria-labelledby="jev-story-title">
+      <div class="story-intro">
+        <span class="story-kicker">认识 Jev</span>
+        <h2 id="jev-story-title">它不和你聊天，<br />它帮软件做决定。</h2>
+        <p>大语言模型擅长写一段回答；Jev 是 TypeSafe 推出的首个 System One 模型，专门把自然语言变成代码能直接使用的选择、评分和概率。</p>
+      </div>
+
+      <div class="proof-grid" aria-label="Jev 公开数据">
+        <article class="proof-card proof-card-blue">
+          <span class="proof-label">官方工作流评测</span>
+          <strong>最高 193.6×</strong>
+          <p>比对照语言模型更快。TypeSafe 同时报告最高 444.6× 更低成本，并说明这是其评测中的高位结果。</p>
+          <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev" target="_blank" rel="noopener noreferrer">查看评测与限制 ↗</a>
+        </article>
+        <article class="proof-card">
+          <span class="proof-label">开发者采用</span>
+          <strong>近 13%</strong>
+          <p>上线 Vercel AI Gateway 后 24 小时内，近 13% 的付费团队使用 Jev，成为该平台史上采用最快的新模型。</p>
+          <a href="https://vercel.com/blog/ai-gateway-jev-model-launch" target="_blank" rel="noopener noreferrer">查看 Vercel 数据 ↗</a>
+        </article>
+        <article class="proof-card">
+          <span class="proof-label">第三方实测</span>
+          <strong>791 次判断</strong>
+          <p>独立测试中，Jev 对比四款小型或通用模型，延迟中位数快 2.0–3.6×，准确率与小模型大致相当。</p>
+          <a href="https://www.ayautomate.com/blog/jev-vs-llm-benchmark" target="_blank" rel="noopener noreferrer">查看测试方法 ↗</a>
+        </article>
+      </div>
+
+      <div class="comparison-card">
+        <div class="comparison-head">
+          <span class="story-kicker">为什么不直接用聊天模型？</span>
+          <h3>生成答案，与做出判断，是两件事。</h3>
+        </div>
+        <div class="comparison-table" role="table" aria-label="Jev 与大语言模型对比">
+          <div class="comparison-row comparison-labels" role="row">
+            <span role="columnheader">对比</span><strong role="columnheader">Jev</strong><strong role="columnheader">大语言模型</strong>
+          </div>
+          <div class="comparison-row" role="row">
+            <span role="cell">输出</span><strong role="cell">选择、评分、概率</strong><span role="cell">自由文本、代码、对话</span>
+          </div>
+          <div class="comparison-row" role="row">
+            <span role="cell">工作方式</span><strong role="cell">并行评估问题</strong><span role="cell">逐字生成回答</span>
+          </div>
+          <div class="comparison-row" role="row">
+            <span role="cell">最适合</span><strong role="cell">分类、路由、审核、排序</strong><span role="cell">写作、解释、创作、复杂推理</span>
+          </div>
+          <div class="comparison-row" role="row">
+            <span role="cell">不确定性</span><strong role="cell">原生返回概率与置信度</strong><span role="cell">通常需要额外提示与解析</span>
+          </div>
+        </div>
+        <p class="comparison-note">Jev 不生成自由文本，因此不会“编造一段看似合理的话”；但判断仍可能出错。重要场景应根据概率设置人工复核阈值。</p>
+      </div>
+    </section>
 
     <footer class="site-footer">
       <span>由 TypeSafe Jev 驱动</span>
