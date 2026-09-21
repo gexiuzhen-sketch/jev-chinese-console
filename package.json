@@ -8,7 +8,7 @@
     "start": "node src/server.js",
     "dev": "NODE_ENV=development node --watch src/server.js",
     "test": "node --test",
-    "check": "node --check src/server.js && node --check public/app.js"
+    "check": "node --check src/server.js && node --check src/analytics.js && node --check public/app.js && node --check public/analytics.js"
   },
   "engines": {
     "node": ">=20"

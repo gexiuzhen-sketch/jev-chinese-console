@@ -16,9 +16,11 @@ export const config = Object.freeze({
   typeSafeApiKey: process.env.TYPESAFE_API_KEY?.trim() || "",
   sessionSecret: requiredSecret("SESSION_SECRET"),
   ipHashSecret: requiredSecret("IP_HASH_SECRET"),
+  analyticsAdminToken: requiredSecret("ANALYTICS_ADMIN_TOKEN"),
   dbPath: process.env.DB_PATH || path.resolve("data/jev-console.db"),
   anonymousDailyLimit: 10,
   authenticatedDailyLimit: 30,
   sessionDays: 30,
   maxStateLength: 12_000,
+  analyticsRetentionDays: 90,
 });

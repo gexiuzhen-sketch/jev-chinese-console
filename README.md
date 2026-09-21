@@ -11,6 +11,8 @@
 - Noul、Choice、Score 三种 Jev 判断模式
 - SQLite 持久化用户、会话和每日用量
 - 输入内容与模型结果不落库
+- 第一方匿名统计：PV、UV、活跃度、判断转化、成功率和功能偏好
+- 管理员数据看板：`/analytics.html`
 
 ## 本地运行
 
@@ -19,7 +21,7 @@
 ```bash
 npm install
 cp .env.example .env
-# 填写 .env 中的 TYPESAFE_API_KEY、SESSION_SECRET 和 IP_HASH_SECRET
+# 填写 .env 中的 TYPESAFE_API_KEY、SESSION_SECRET、IP_HASH_SECRET 和 ANALYTICS_ADMIN_TOKEN
 set -a && source .env && set +a
 npm start
 ```
@@ -33,6 +35,7 @@ npm start
 | `TYPESAFE_API_KEY` | TypeSafe 控制台生成的 API Key，仅服务端使用 |
 | `SESSION_SECRET` | 会话签名密钥，生产环境必填 |
 | `IP_HASH_SECRET` | IP 匿名化 HMAC 密钥，生产环境必填 |
+| `ANALYTICS_ADMIN_TOKEN` | 数据看板管理员口令，生产环境必填 |
 | `PUBLIC_ORIGIN` | 生产站点来源，例如 `https://jev.lumingzt.cn` |
 | `DB_PATH` | SQLite 数据库路径 |
 | `PORT` | 本地监听端口，默认 `8787` |
@@ -58,5 +61,6 @@ npm run check
 - 请勿提交 `.env` 或 API Key；仓库已通过 `.gitignore` 排除相关文件。
 - 服务器只保存经过单向哈希的会话令牌和匿名化 IP 标识。
 - 用户提交给 Jev 的判断内容与结果不会写入本地数据库。
+- 统计系统只记录匿名访客标识、功能事件、判断类型、状态与耗时，默认保留 90 天。
 
 TypeSafe 与 Jev 是 TypeSafe AI 的产品与商标。本项目是独立的中文体验界面。

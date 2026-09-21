@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
@@ -23,6 +24,12 @@ import {
   reserveUsage,
 } from "./quota.js";
 import { evaluateWithJev, evaluationSchema } from "./jev.js";
+import {
+  addAnalyticsEvent,
+  analyticsSummary,
+  cleanupAnalytics,
+  ensureVisitor,
+} from "./analytics.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDirectory = path.resolve(__dirname, "../public");
@@ -94,6 +101,38 @@ const registerSchema = authSchema.extend({
   displayName: z.string().trim().min(1, "请输入昵称").max(40, "昵称过长"),
 });
 
+const clientAnalyticsSchema = z.discriminatedUnion("event", [
+  z.object({ event: z.literal("page_view") }).strict(),
+  z.object({ event: z.literal("cta_click"), dimension: z.enum(["playground", "cases"]) }).strict(),
+  z.object({ event: z.literal("sample_select"), dimension: z.enum(["ticket", "review", "priority"]) }).strict(),
+  z.object({ event: z.literal("primitive_select"), dimension: z.enum(["noul", "choice", "score"]) }).strict(),
+  z.object({ event: z.literal("auth_open"), dimension: z.enum(["login", "register"]) }).strict(),
+]);
+
+function recordEvent(request, response, eventType, { dimension = null, value = null, user = undefined } = {}) {
+  try {
+    const authenticatedUser = user === undefined ? currentUser(request) : user;
+    addAnalyticsEvent({
+      eventType,
+      visitorHash: ensureVisitor(request, response),
+      userId: authenticatedUser?.id || null,
+      dimension,
+      value,
+    });
+  } catch (error) {
+    console.error("Analytics event failed", { eventType, message: error.message });
+  }
+}
+
+function hasAdminAccess(request) {
+  const authorization = request.get("authorization") || "";
+  const supplied = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+  const suppliedBuffer = Buffer.from(supplied);
+  const expectedBuffer = Buffer.from(config.analyticsAdminToken);
+  return suppliedBuffer.length === expectedBuffer.length
+    && crypto.timingSafeEqual(suppliedBuffer, expectedBuffer);
+}
+
 function sessionPayload(request, authenticatedUser) {
   const user = authenticatedUser === undefined ? currentUser(request) : authenticatedUser;
   const quota = quotaFor(user, clientIp(request));
@@ -120,6 +159,24 @@ app.get("/api/session", (request, response) => {
   response.json(sessionPayload(request));
 });
 
+app.post("/api/analytics/event", burstLimit("analytics", 120, 60_000), (request, response) => {
+  const parsed = clientAnalyticsSchema.safeParse(request.body);
+  if (!parsed.success) return response.status(400).json({ error: "统计事件无效" });
+  const event = parsed.data;
+  recordEvent(request, response, event.event, { dimension: event.dimension || null });
+  return response.status(204).end();
+});
+
+app.get("/api/admin/analytics", burstLimit("analytics-admin", 30, 60_000), (request, response) => {
+  response.set("Cache-Control", "no-store");
+  if (!hasAdminAccess(request)) {
+    return response.status(401).json({ error: "管理员口令无效" });
+  }
+  const parsed = z.coerce.number().int().min(1).max(90).safeParse(request.query.days || 30);
+  if (!parsed.success) return response.status(400).json({ error: "统计周期无效" });
+  return response.json(analyticsSummary({ days: parsed.data }));
+});
+
 app.post("/api/auth/register", burstLimit("register", 8, 15 * 60_000), async (request, response, next) => {
   const ipId = anonymizeIp(clientIp(request));
   const registration = reserveUsage({
@@ -136,6 +193,7 @@ app.post("/api/auth/register", burstLimit("register", 8, 15 * 60_000), async (re
     const user = await registerUser(input);
     const session = createSession(user.id);
     setSessionCookie(response, session.token, session.expiresAt);
+    recordEvent(request, response, "register_success", { user });
     return response.status(201).json(sessionPayload(request, user));
   } catch (error) {
     refundUsage({ subjectType: "registration", subjectId: ipId });
@@ -156,6 +214,7 @@ app.post("/api/auth/login", burstLimit("login", 12, 15 * 60_000), async (request
     if (!user) return response.status(401).json({ error: "邮箱或密码不正确" });
     const session = createSession(user.id);
     setSessionCookie(response, session.token, session.expiresAt);
+    recordEvent(request, response, "login_success", { user });
     return response.json(sessionPayload(request, user));
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -201,6 +260,11 @@ app.post("/api/evaluate", burstLimit("evaluate", 25, 60_000), async (request, re
     const startedAt = performance.now();
     const result = await evaluateWithJev(input);
     const latencyMs = Math.round(performance.now() - startedAt);
+    recordEvent(request, response, "evaluation_success", {
+      dimension: input.type,
+      value: latencyMs,
+      user,
+    });
     return response.json({
       result: { ...result, latencyMs },
       quota: {
@@ -211,6 +275,12 @@ app.post("/api/evaluate", burstLimit("evaluate", 25, 60_000), async (request, re
     });
   } catch (error) {
     refundUsage({ subjectType: quota.subjectType, subjectId: quota.subjectId });
+    recordEvent(request, response, "evaluation_failure", {
+      dimension: ["JEV_NOT_CONFIGURED", "JEV_RATE_LIMIT", "JEV_TIMEOUT"].includes(error.code)
+        ? error.code.toLowerCase()
+        : "unknown",
+      user,
+    });
     if (error.code === "JEV_NOT_CONFIGURED") {
       return response.status(503).json({ error: "Jev 服务正在完成配置，请稍后再试" });
     }
@@ -240,8 +310,10 @@ app.use((error, _request, response, _next) => {
 });
 
 cleanupExpiredSessions();
+cleanupAnalytics();
 setInterval(() => {
   cleanupExpiredSessions();
+  cleanupAnalytics();
   const cutoff = Date.now() - 60 * 60_000;
   for (const [key, bucket] of burstBuckets) {
     if (bucket.resetAt < cutoff) burstBuckets.delete(key);

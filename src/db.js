@@ -41,6 +41,24 @@ export function createDatabase(filename) {
 
     CREATE INDEX IF NOT EXISTS idx_daily_usage_date
       ON daily_usage(usage_date);
+
+    CREATE TABLE IF NOT EXISTS analytics_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      event_type TEXT NOT NULL,
+      visitor_hash TEXT NOT NULL,
+      user_id TEXT,
+      dimension TEXT,
+      value INTEGER,
+      event_date TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_analytics_events_date_type
+      ON analytics_events(event_date, event_type);
+    CREATE INDEX IF NOT EXISTS idx_analytics_events_visitor_date
+      ON analytics_events(visitor_hash, event_date);
+    CREATE INDEX IF NOT EXISTS idx_analytics_events_created_at
+      ON analytics_events(created_at);
   `);
   return database;
 }

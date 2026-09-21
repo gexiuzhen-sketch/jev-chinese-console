@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>数据看板 · Jev中文体验台</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/analytics.css" />
+  </head>
+  <body>
+    <header class="dashboard-header">
+      <a class="dashboard-brand" href="/">
+        <span class="brand-mark">J</span>
+        <span><strong>Jev中文体验台</strong><small>数据看板</small></span>
+      </a>
+      <div class="dashboard-actions hidden" id="dashboard-actions">
+        <label for="days-select">统计周期</label>
+        <select id="days-select">
+          <option value="7">最近 7 天</option>
+          <option value="30" selected>最近 30 天</option>
+          <option value="90">最近 90 天</option>
+        </select>
+        <button id="refresh-button" type="button">刷新</button>
+        <button class="quiet" id="logout-button" type="button">锁定</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="unlock-card" id="unlock-card">
+        <span class="eyebrow">仅限站点管理员</span>
+        <h1>查看真实体验数据</h1>
+        <p>输入部署时生成的统计口令。口令只保留在当前浏览器标签页，不会写入网址。</p>
+        <form id="unlock-form">
+          <label for="admin-token">管理员口令</label>
+          <div class="unlock-row">
+            <input id="admin-token" type="password" autocomplete="current-password" required />
+            <button type="submit">进入看板</button>
+          </div>
+          <p class="form-error" id="unlock-error" role="alert"></p>
+        </form>
+      </section>
+
+      <section class="dashboard hidden" id="dashboard" aria-live="polite">
+        <div class="dashboard-title">
+          <div><span class="eyebrow">实时概览</span><h1>用户真的在用吗？</h1></div>
+          <p id="range-label">正在读取…</p>
+        </div>
+
+        <div class="metric-grid" id="metric-grid"></div>
+
+        <div class="dashboard-grid">
+          <article class="data-card trend-card">
+            <div class="card-head"><div><span>趋势</span><h2>访问与判断</h2></div><div class="legend"><i class="pv"></i>PV <i class="eval"></i>判断</div></div>
+            <div class="trend-chart" id="trend-chart"></div>
+          </article>
+
+          <article class="data-card">
+            <div class="card-head"><div><span>功能偏好</span><h2>判断类型</h2></div></div>
+            <div class="rank-list" id="primitive-list"></div>
+          </article>
+
+          <article class="data-card">
+            <div class="card-head"><div><span>交互</span><h2>用户做了什么</h2></div></div>
+            <div class="rank-list" id="interaction-list"></div>
+          </article>
+
+          <article class="data-card privacy-card">
+            <span class="eyebrow">隐私边界</span>
+            <h2>只看行为，不看内容</h2>
+            <p>看板记录匿名访客、按钮事件、判断类型、成功状态与耗时。不会记录用户提交的文本、问题、候选项或 Jev 返回结果。</p>
+          </article>
+        </div>
+        <p class="dashboard-error" id="dashboard-error" role="alert"></p>
+      </section>
+    </main>
+    <script type="module" src="/analytics.js"></script>
+  </body>
+</html>

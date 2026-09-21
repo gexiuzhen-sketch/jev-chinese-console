@@ -51,6 +51,16 @@ const samples = {
   },
 };
 
+function track(event, dimension) {
+  const body = dimension ? { event, dimension } : { event };
+  fetch("/api/analytics/event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    keepalive: true,
+  }).catch(() => {});
+}
+
 function escapeText(value) {
   return String(value ?? "");
 }
@@ -94,7 +104,7 @@ async function loadSession() {
   }
 }
 
-function setPrimitive(type) {
+function setPrimitive(type, shouldTrack = true) {
   state.primitive = type;
   $$(".primitive-tab").forEach((button) => {
     const active = button.dataset.type === type;
@@ -104,6 +114,7 @@ function setPrimitive(type) {
   $("#instructions-input").placeholder = primitiveCopy[type].placeholder;
   $("#run-note-text").textContent = primitiveCopy[type].note;
   renderDynamicFields();
+  if (shouldTrack) track("primitive_select", type);
 }
 
 function createInput(value, className, placeholder, onInput) {
@@ -186,7 +197,8 @@ function applySample(sampleName) {
   $("#instructions-input").value = sample.instructions;
   if (sample.options) state.options = sample.options.map((option) => ({ ...option }));
   if (sample.levels) state.levels = [...sample.levels];
-  setPrimitive(sample.type);
+  setPrimitive(sample.type, false);
+  track("sample_select", sampleName);
   $("#form-error").textContent = "";
 }
 
@@ -346,6 +358,7 @@ function openAuthDialog(mode = "login") {
   setAuthMode(mode);
   $("#auth-error").textContent = "";
   $("#auth-dialog").showModal();
+  track("auth_open", mode);
 }
 
 function setAuthMode(mode) {
@@ -401,6 +414,7 @@ $("#state-input").addEventListener("input", (event) => {
 $$(".primitive-tab").forEach((button) => button.addEventListener("click", () => setPrimitive(button.dataset.type)));
 $$("[data-sample]").forEach((button) => button.addEventListener("click", () => applySample(button.dataset.sample)));
 $$("[data-auth-mode]").forEach((button) => button.addEventListener("click", () => setAuthMode(button.dataset.authMode)));
+$$('[data-track-cta]').forEach((link) => link.addEventListener("click", () => track("cta_click", link.dataset.trackCta)));
 $("#evaluate-button").addEventListener("click", evaluate);
 $("#account-button").addEventListener("click", accountAction);
 $("#dialog-close").addEventListener("click", () => $("#auth-dialog").close());
@@ -409,5 +423,6 @@ $("#auth-dialog").addEventListener("click", (event) => {
   if (event.target === $("#auth-dialog")) $("#auth-dialog").close();
 });
 
-setPrimitive("noul");
+setPrimitive("noul", false);
 loadSession();
+track("page_view");
