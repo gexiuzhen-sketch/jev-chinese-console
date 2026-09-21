@@ -98,9 +98,6 @@ button { color: inherit; }
 .brand small { display: block; color: var(--muted); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
 
 .account-area { display: flex; align-items: center; gap: 10px; }
-.official-link { color: #435064; font-size: 13px; font-weight: 750; text-decoration: none; }
-.official-link span { color: var(--blue); }
-.official-link:hover { color: var(--blue); }
 .quota-pill {
   display: inline-flex;
   align-items: center;
@@ -446,7 +443,6 @@ button { color: inherit; }
   .button.primary { min-height: 50px; }
   .result-empty, .result-loading { min-height: 340px; }
   .site-footer { padding: 0 16px 22px; display: grid; gap: 4px; }
-  .official-link { display: none; }
   .jev-story { margin-top: 24px; padding: 42px 16px 20px; }
   .story-intro { display: block; margin-bottom: 26px; }
   .story-intro h2 { font-size: 44px; margin-bottom: 24px; }
